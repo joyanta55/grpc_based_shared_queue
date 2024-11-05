@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package grpcSharedQueue;
+
+message Request {
+    string data = 1;
+}
+message Response {
+    string data = 1;
+}
+
+message GetDataparams {}
+
+service RequestResponse {
+  rpc PostData (Request) returns (Response);
+  rpc GetData (GetDataparams) returns (Response);
+}
