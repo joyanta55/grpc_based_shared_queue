@@ -7,6 +7,8 @@
 #include "threads.h"
 #include "cjson/cJSON.h"
 
+#include <cstdlib>
+
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -20,6 +22,11 @@ std::list<cJSON*> list_grpc;
 
 class RequestResonseServiceImpl final : public RequestResponse::Service {
   Status PostData(ServerContext* context, const Request* request, Response* response) override {
+
+    const char* env_var = std::getenv("principle");
+
+    std::cout<<env_var<<std::endl;
+
     cJSON* request_val = cJSON_Parse(request->data().c_str());
 
     if (request_val==NULL) {

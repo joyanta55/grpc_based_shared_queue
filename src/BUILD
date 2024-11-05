@@ -60,6 +60,9 @@ cc_binary(
     name = "server",
     srcs = ["server.cpp",":helloworld_proto_compile"],
     deps = [":helloworld_grpc_lib",":cjson"],
+    env = {
+        "principle": "stack", # or queue
+    },
 )
 
 cc_binary(
