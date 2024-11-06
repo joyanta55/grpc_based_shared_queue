@@ -1,5 +1,7 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
 http_archive(
     name = "rules_foreign_cc",
     sha256 = "a2e6fb56e649c1ee79703e99aa0c9d13c6cc53c8d7a0cbb8797ab2888bbc99a3",
@@ -31,10 +33,19 @@ grpc_deps()
 load("@com_github_grpc_grpc//bazel:grpc_extra_deps.bzl", "grpc_extra_deps")
 grpc_extra_deps()
 
+
+# For json 
 http_archive(
     name = "cjson_remote_lib",
     sha256 = "0c938cdc091fffbe9091d29ffafe17c4c15e184fc0aca8430517c80ac1bc5a97",
     url = "https://github.com/joyanta55/cJSON/archive/refs/heads/master.zip",
     strip_prefix = "cJSON-master",
     build_file_content = "",
+)
+
+# for google test 
+git_repository(
+    name = "googletest",
+    remote = "https://github.com/google/googletest",
+    tag = "v1.15.2",
 )

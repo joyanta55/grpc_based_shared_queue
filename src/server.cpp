@@ -1,11 +1,12 @@
 // greeter_server.cpp
 
-#include "iostream"
-#include "string"
-#include "grpcpp/grpcpp.h"
-#include "src/sharedqueue.grpc.pb.h"
-#include "threads.h"
 #include "cjson/cJSON.h"
+#include "grpcpp/grpcpp.h"
+#include "iostream"
+#include "src/shared/sharedQueue.h"
+#include "src/sharedqueue.grpc.pb.h"
+#include "string"
+#include "threads.h"
 
 #include <cstdlib>
 
@@ -13,55 +14,54 @@ using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
+using grpcSharedQueue::GetDataparams;
 using grpcSharedQueue::Request;
 using grpcSharedQueue::RequestResponse;
 using grpcSharedQueue::Response;
-using grpcSharedQueue::GetDataparams;
 
-std::list<cJSON*> list_grpc;
+SharedQueue shared_queue_instance;
 
 class RequestResonseServiceImpl final : public RequestResponse::Service {
-  Status PostData(ServerContext* context, const Request* request, Response* response) override {
+  Status PostData(ServerContext *context, const Request *request,
+                  Response *response) override {
 
-    const char* env_var = std::getenv("principle");
+    const char *env_var = std::getenv("principle");
 
-    std::cout<<env_var<<std::endl;
+    std::cout << env_var << std::endl;
 
-    cJSON* request_val = cJSON_Parse(request->data().c_str());
+    sharedRT insert = shared_queue_instance.insertValue(request->data());
 
-    if (request_val==NULL) {
-      response->set_data("data is not properly json formatted");
+    if (!insert.success) {
+      response->set_data(insert.reason);
       return Status::CANCELLED;
+    } else {
+      response->set_data("Data stored");
     }
-    else {
-      list_grpc.push_back(request_val);
-    }
-
-    response->set_data("Data stored");
 
     return Status::OK;
   }
-  Status GetData(ServerContext* context, const GetDataparams* request, Response* response) override {
+  Status GetData(ServerContext *context, const GetDataparams *request,
+                 Response *response) override {
 
-    if (list_grpc.empty()) {
-       response->set_data("No data available");
-       return Status::OK;
-    }
-    cJSON* list_front_item = list_grpc.front();
-    list_grpc.pop_front();
-    char* data = cJSON_Print(list_front_item);
-    response->set_data(std::string(data));
+    sharedRT value = shared_queue_instance.popValue();
 
-    free(data);
-    cJSON_free(list_front_item);
+    response->set_data(value.data);
+
+    return Status::OK;
+  }
+
+
+  Status ResetData(ServerContext *context, const GetDataparams *request,
+                 GetDataparams *response) override {
+
+    shared_queue_instance.reset();
     return Status::OK;
   }
 };
 
 void RunServer() {
-  
-  list_grpc = {};
 
+  shared_queue_instance.init();
   std::string server_address("0.0.0.0:50051");
   RequestResonseServiceImpl service;
 
@@ -74,7 +74,7 @@ void RunServer() {
   server->Wait();
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   RunServer();
   return 0;
 }

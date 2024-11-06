@@ -13,6 +13,7 @@ proto_library(
 cpp_proto_compile(
     name = "helloworld_proto_compile",
     protos = [":helloworld_proto"],
+    visibility = ["//visibility:public"],
 )
 
 # Generates only grpc related files (for example: *pb.h, *pb.cc, *grpc.pb.h, *grpc.pb.cc files)
@@ -39,6 +40,7 @@ cc_library(
     name = "helloworld_grpc_lib",
     srcs = [":helloworld_cpp_grpc_compile"],
     deps = [":helloworld_proto_grpc_cpp"],
+    visibility = ["//visibility:public"],
 )
 
 
@@ -52,21 +54,29 @@ cmake(
     lib_source = "@cjson_remote_lib//:all_files",
     install = True,
     out_shared_libs = ["libcjson.so"],
+    visibility = ["//visibility:public"],
 )
 
+
+cc_library(
+    name = "shared_list",
+    srcs = ["shared/sharedQueue.cpp"],
+    hdrs = ["shared/sharedQueue.h"],
+    deps = [":cjson"],
+)
 
 
 cc_binary(
     name = "server",
     srcs = ["server.cpp",":helloworld_proto_compile"],
-    deps = [":helloworld_grpc_lib",":cjson"],
+    deps = [":helloworld_grpc_lib",":cjson",":shared_list"],
     env = {
         "principle": "stack", # or queue
     },
 )
 
-cc_binary(
-    name = "client",
-    srcs = ["client.cpp",":helloworld_proto_compile"],
-    deps = [":helloworld_grpc_lib"],
-)
+# cc_binary(
+#     name = "client",
+#     srcs = ["../examples/client.cpp",":helloworld_proto_compile"],
+#     deps = [":helloworld_grpc_lib"],
+# )

@@ -14,4 +14,5 @@ message GetDataparams {}
 service RequestResponse {
   rpc PostData (Request) returns (Response);
   rpc GetData (GetDataparams) returns (Response);
+  rpc ResetData (GetDataparams) returns (GetDataparams);
 }
