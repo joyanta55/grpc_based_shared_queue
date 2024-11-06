@@ -28,3 +28,7 @@ one application requires to share a data as follows:
 The application makes a `PostData` RPC request to the gRPC server, which stores the provided JSON value in an associated in-memory queue. Subsequent requests are appended to the queue, maintaining the order of incoming data.
 
 On the other hand, other applications can query the gRPC server to check if any data has been pushed by other applications. The `GetData` RPC retrieves the top items from the internal queue. For reference, you can follow the structure in the `test` directory to understand the implementation. The better way to implement this could be polling the grpc server via `GetData` RPC.
+
+N.B. there is another RPC named `ResetData`, which simply reset the grpc server internal queue. 
+
+Follow the `src/sharedqueue.proto` file to check the defined RPC.
