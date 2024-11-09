@@ -67,12 +67,15 @@ int main(int argc, char **argv) {
 
   data = "{\"name\":\"Tom\", \"age\":20,\"car\":null}";
   postdata = client_instance.PostData(data);
+
+  // Pop items
   std::string reply = client_instance.GetData();
   std::cout << "Response received: " << reply << std::endl;
 
   reply = client_instance.GetData();
   std::cout << "Response received: " << reply << std::endl;
 
+  // empty string
   reply = client_instance.GetData();
   std::cout << "Response received: " << reply << std::endl;
   return 0;
