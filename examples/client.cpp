@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
       "{\"name\":\"John\", \"age\":30,\"car\":null,\"job\":\"engineer\"}";
   std::string postdata = client_instance.PostData(data);
 
-  data = "{\"name\":\"Joyanta\", \"age\":20,\"car\":null}";
+  data = "{\"name\":\"Tom\", \"age\":20,\"car\":null}";
   postdata = client_instance.PostData(data);
   std::string reply = client_instance.GetData();
   std::cout << "Response received: " << reply << std::endl;
